@@ -258,7 +258,7 @@ void bsp_early_initialize(void)
     RT_CHECK(drv_usart_init());
 
     /* init console to enable console output */
-    // FMT_CHECK(console_init());
+    FMT_CHECK(console_init());
 
     /* system timer init */
     RT_CHECK(drv_systick_init());
@@ -285,7 +285,7 @@ void bsp_early_initialize(void)
 /* this function will be called after rtos start, which is in thread context */
 void bsp_initialize(void)
 {
-    EnablePower();
+    //EnablePower();
 
     // /* start recording boot log */
     // FMT_CHECK(boot_log_init());
