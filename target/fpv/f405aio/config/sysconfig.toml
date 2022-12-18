@@ -1,7 +1,7 @@
 # FMT System Configuration File
 
 # The target should match with BSP's target name
-target = "CUAV V5+"
+target = "FPV F405AIO"
 
 # Console Configuration
 [console]

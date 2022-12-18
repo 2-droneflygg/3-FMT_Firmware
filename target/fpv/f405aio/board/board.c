@@ -19,31 +19,71 @@
 #include <board_device.h>
 #include <shell.h>
 #include <string.h>
-
-#include "board_device.h"
-#include "drv_systick.h"
-#include "drv_usart.h"
+#ifdef FMT_USING_CM_BACKTRACE
+    #include <cm_backtrace.h>
+#endif
+#ifdef FMT_USING_UNIT_TEST
+    #include <utest.h>
+#endif
 
 #include "default_config.h"
+// #include "driver/barometer/ms5611.h"
+// #include "driver/gps/gps_m8n.h"
+// #include "driver/imu/l3gd20h.h"
+// #include "driver/imu/lsm303d.h"
+// #include "driver/imu/mpu6000.h"
+// #include "driver/rgb_led/tca62724.h"
+// #include "driver/vision_flow/mtf_01.h"
+// #include "drv_adc.h"
+#include "drv_gpio.h"
+// #include "drv_i2c_soft.h"
+// #include "drv_pwm.h"
+// #include "drv_sdio.h"
+// #include "drv_spi.h"
+#include "drv_systick.h"
+#include "drv_usart.h"
+// #include "drv_usbd_cdc.h"
+// #include "hal/fmtio_dev/fmtio_dev.h"
+// #include "led.h"
 #include "model/control/control_interface.h"
 #include "model/fms/fms_interface.h"
 #include "model/ins/ins_interface.h"
 #include "module/console/console_config.h"
 #include "module/file_manager/file_manager.h"
+#include "module/mavproxy/mavproxy_config.h"
+#include "module/param/param.h"
+#include "module/pmu/power_manager.h"
+#include "module/sensor/sensor_hub.h"
+#include "module/sysio/actuator_cmd.h"
+#include "module/sysio/actuator_config.h"
+#include "module/sysio/auto_cmd.h"
+#include "module/sysio/gcs_cmd.h"
+#include "module/sysio/mission_data.h"
+#include "module/sysio/pilot_cmd.h"
+#include "module/sysio/pilot_cmd_config.h"
+#include "module/system/statistic.h"
+#include "module/system/systime.h"
 #include "module/task_manager/task_manager.h"
 #include "module/toml/toml.h"
+#include "module/utils/devmq.h"
+#include "module/workqueue/workqueue_manager.h"
 #ifdef FMT_USING_SIH
     #include "model/plant/plant_interface.h"
 #endif
+#include "protocol/msp/msp.h"
 
 #define MATCH(a, b)     (strcmp(a, b) == 0)
 #define SYS_CONFIG_FILE "/sys/sysconfig.toml"
 
 static const struct dfs_mount_tbl mnt_table[] = {
+    { "sd0", "/", "elm", 0, NULL },
     { NULL } /* NULL indicate the end */
 };
 
-static toml_table_t* __toml_root_tab = NULL;
+static toml_table_t* _toml_root_tab = NULL;
+
+rt_device_t main_out_dev = NULL;
+rt_device_t aux_out_dev = NULL;
 
 static void banner_item(const char* name, const char* content, char pad, uint32_t len)
 {
@@ -102,6 +142,51 @@ static void bsp_show_information(void)
     }
 }
 
+/**
+ * @brief Enable on-board device power supply
+ * 
+ */
+static void EnablePower(void)
+{
+    GPIO_InitTypeDef GPIO_InitStructure = { 0 };
+
+    RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOA, ENABLE);
+    RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOE, ENABLE);
+
+    GPIO_InitStructure.GPIO_Pin = GPIO_Pin_8;
+    GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
+    GPIO_InitStructure.GPIO_Speed = GPIO_Speed_100MHz;
+    GPIO_InitStructure.GPIO_Mode = GPIO_Mode_OUT;
+    GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_NOPULL;
+    GPIO_Init(GPIOA, &GPIO_InitStructure);
+    GPIO_ResetBits(GPIOA, GPIO_Pin_8);
+
+    GPIO_InitStructure.GPIO_Pin = GPIO_Pin_3;
+    GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
+    GPIO_InitStructure.GPIO_Speed = GPIO_Speed_100MHz;
+    GPIO_InitStructure.GPIO_Mode = GPIO_Mode_OUT;
+    GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_NOPULL;
+    GPIO_Init(GPIOE, &GPIO_InitStructure);
+    GPIO_SetBits(GPIOE, GPIO_Pin_3);
+
+    /* Wait some time for power becoming stable */
+    systime_mdelay(100);
+}
+
+static void NVIC_Configuration(void)
+{
+#ifdef VECT_TAB_RAM
+    /* Set the Vector Table base location at 0x20000000 */
+    NVIC_SetVectorTable(NVIC_VectTab_RAM, INT_VECTOR_OFFSET);
+#else /* VECT_TAB_FLASH  */
+    /* Set the Vector Table base location at 0x8004000 */
+    /* first 0x4000 is reserved for bootloader, so the vectortab offset is 0x4000 */
+    NVIC_SetVectorTable(NVIC_VectTab_FLASH, INT_VECTOR_OFFSET);
+#endif
+
+    NVIC_PriorityGroupConfig(NVIC_PriorityGroup_2);
+}
+
 static fmt_err_t bsp_parse_toml_sysconfig(toml_table_t* root_tab)
 {
     fmt_err_t err = FMT_EOK;
@@ -137,9 +222,19 @@ static fmt_err_t bsp_parse_toml_sysconfig(toml_table_t* root_tab)
         for (i = 0; 0 != (key = toml_key_in(root_tab, i)); i++) {
             /* handle all sub tables */
             if (0 != (sub_tab = toml_table_in(root_tab, key))) {
-                if (err != FMT_EOK) {
-                    console_printf("fail to parse %s\n", key);
-                }
+                if (MATCH(key, "console")) {
+                    err = console_toml_config(sub_tab);
+                } 
+                // else if (MATCH(key, "mavproxy")) {
+                //     err = mavproxy_toml_config(sub_tab);
+                // } else if (MATCH(key, "pilot-cmd")) {
+                //     err = pilot_cmd_toml_config(sub_tab);
+                // } else if (MATCH(key, "actuator")) {
+                //     err = actuator_toml_config(sub_tab);
+                // } else {
+                //     console_printf("unknown table: %s\n", key);
+                //     continue;
+                //}
             }
         }
     }
@@ -150,170 +245,38 @@ static fmt_err_t bsp_parse_toml_sysconfig(toml_table_t* root_tab)
     return err;
 }
 
-/**
- * @brief Enable on-board device power supply
- *
- */
-static void EnablePower(void)
-{
-    LL_GPIO_InitTypeDef GPIO_InitStruct = { 0 };
-
-    LL_AHB1_GRP1_EnableClock(LL_AHB1_GRP1_PERIPH_GPIOE);
-    LL_AHB1_GRP1_EnableClock(LL_AHB1_GRP1_PERIPH_GPIOG);
-
-    /* init gpio */
-    GPIO_InitStruct.Pin = LL_GPIO_PIN_3;
-    GPIO_InitStruct.Mode = LL_GPIO_MODE_OUTPUT;
-    GPIO_InitStruct.Speed = LL_GPIO_SPEED_FREQ_LOW;
-    GPIO_InitStruct.OutputType = LL_GPIO_OUTPUT_PUSHPULL;
-    GPIO_InitStruct.Pull = LL_GPIO_PULL_NO;
-    LL_GPIO_Init(GPIOE, &GPIO_InitStruct);
-    /* VDD_3V3_Sensor_EN active high */
-    LL_GPIO_SetOutputPin(GPIOE, LL_GPIO_PIN_3);
-
-    /* init gpio */
-    GPIO_InitStruct.Pin = LL_GPIO_PIN_5;
-    GPIO_InitStruct.Mode = LL_GPIO_MODE_OUTPUT;
-    GPIO_InitStruct.Speed = LL_GPIO_SPEED_FREQ_LOW;
-    GPIO_InitStruct.OutputType = LL_GPIO_OUTPUT_PUSHPULL;
-    GPIO_InitStruct.Pull = LL_GPIO_PULL_NO;
-    LL_GPIO_Init(GPIOG, &GPIO_InitStruct);
-    /* VDD_5V_RC_EN active high */
-    LL_GPIO_SetOutputPin(GPIOG, LL_GPIO_PIN_5);
-
-    /* init gpio */
-    GPIO_InitStruct.Pin = LL_GPIO_PIN_7;
-    GPIO_InitStruct.Mode = LL_GPIO_MODE_OUTPUT;
-    GPIO_InitStruct.Speed = LL_GPIO_SPEED_FREQ_LOW;
-    GPIO_InitStruct.OutputType = LL_GPIO_OUTPUT_PUSHPULL;
-    GPIO_InitStruct.Pull = LL_GPIO_PULL_NO;
-    LL_GPIO_Init(GPIOG, &GPIO_InitStruct);
-    /* SD_CARD_EN active high */
-    LL_GPIO_SetOutputPin(GPIOG, LL_GPIO_PIN_7);
-
-    /* Wait some time for power becoming stable */
-    systime_mdelay(100);
-}
-
-/*
- * When enabling the D-cache there is cache coherency issue.
- * This matter crops up when multiple masters (CPU, DMAs...)
- * share the memory. If the CPU writes something to an area
- * that has a write-back cache attribute (example SRAM), the
- * write result is not seen on the SRAM as the access is
- * buffered, and then if the DMA reads the same memory area
- * to perform a data transfer, the values read do not match
- * the intended data. The issue occurs for DMA read as well.
- * Currently not all drivers can ensure the data coherency
- * when D-Cache enabled, so disable it by default.
- */
-/**
- * @brief  CPU L1-Cache enable.
- * @param  None
- * @retval None
- */
-static void CPU_CACHE_Enable(void)
-{
-    /* Enable I-Cache */
-    SCB_EnableICache();
-
-    /* Enable D-Cache */
-    // SCB_EnableDCache();
-}
-
-/**
- * @brief  This function is executed in case of error occurrence.
- * @retval None
- */
-void Error_Handler(void)
-{
-    console_printf("Enter Error_Handler\n");
-    /* USER CODE BEGIN Error_Handler_Debug */
-    /* User can add his own implementation to report the HAL error return state */
-    __disable_irq();
-    while (1) {
-    }
-    /* USER CODE END Error_Handler_Debug */
-}
-
-/**
- * @brief System Clock Configuration
- * @retval None
- */
-void SystemClock_Config(void)
-{
-    LL_FLASH_SetLatency(LL_FLASH_LATENCY_7);
-    while (LL_FLASH_GetLatency() != LL_FLASH_LATENCY_7) {
-    }
-    LL_PWR_SetRegulVoltageScaling(LL_PWR_REGU_VOLTAGE_SCALE1);
-    LL_PWR_EnableOverDriveMode();
-    LL_RCC_HSE_Enable();
-
-    /* Wait till HSE is ready */
-    while (LL_RCC_HSE_IsReady() != 1) {
-    }
-    LL_RCC_PLL_ConfigDomain_SYS(LL_RCC_PLLSOURCE_HSE, LL_RCC_PLLM_DIV_8, 216, LL_RCC_PLLP_DIV_2);
-    LL_RCC_PLL_ConfigDomain_48M(LL_RCC_PLLSOURCE_HSE, LL_RCC_PLLM_DIV_8, 216, LL_RCC_PLLQ_DIV_9);
-    LL_RCC_PLL_Enable();
-
-    /* Wait till PLL is ready */
-    while (LL_RCC_PLL_IsReady() != 1) {
-    }
-    LL_RCC_SetAHBPrescaler(LL_RCC_SYSCLK_DIV_1);
-    LL_RCC_SetAPB1Prescaler(LL_RCC_APB1_DIV_4);
-    LL_RCC_SetAPB2Prescaler(LL_RCC_APB2_DIV_2);
-    LL_RCC_SetSysClkSource(LL_RCC_SYS_CLKSOURCE_PLL);
-
-    /* Wait till System clock is ready */
-    while (LL_RCC_GetSysClkSource() != LL_RCC_SYS_CLKSOURCE_STATUS_PLL) {
-    }
-    LL_SetSystemCoreClock(216000000);
-
-    /* Update the time base */
-    if (HAL_InitTick(TICK_INT_PRIORITY) != HAL_OK) {
-        Error_Handler();
-    }
-    LL_RCC_SetCK48MClockSource(LL_RCC_CK48M_CLKSOURCE_PLL);
-    LL_RCC_SetUSBClockSource(LL_RCC_USB_CLKSOURCE_PLL);
-    LL_RCC_SetSDMMCClockSource(LL_RCC_SDMMC1_CLKSOURCE_PLL48CLK);
-    LL_RCC_SetUSARTClockSource(LL_RCC_USART1_CLKSOURCE_PCLK2);
-    LL_RCC_SetUSARTClockSource(LL_RCC_USART2_CLKSOURCE_PCLK1);
-    LL_RCC_SetUSARTClockSource(LL_RCC_USART3_CLKSOURCE_PCLK1);
-    LL_RCC_SetUSARTClockSource(LL_RCC_UART4_CLKSOURCE_PCLK1);
-    LL_RCC_SetUSARTClockSource(LL_RCC_USART6_CLKSOURCE_PCLK2);
-    LL_RCC_SetUARTClockSource(LL_RCC_UART7_CLKSOURCE_PCLK1);
-    LL_RCC_SetI2CClockSource(LL_RCC_I2C1_CLKSOURCE_PCLK1);
-    LL_RCC_SetI2CClockSource(LL_RCC_I2C2_CLKSOURCE_PCLK1);
-    LL_RCC_SetI2CClockSource(LL_RCC_I2C3_CLKSOURCE_PCLK1);
-    LL_RCC_SetI2CClockSource(LL_RCC_I2C4_CLKSOURCE_PCLK1);
-}
-
 /* this function will be called before rtos start, which is not in the thread context */
 void bsp_early_initialize(void)
 {
-    /* Enable CPU L1-cache */
-    CPU_CACHE_Enable();
+    /* interrupt controller init */
+    NVIC_Configuration();
 
     /* init system heap */
     rt_system_heap_init((void*)SYSTEM_FREE_MEM_BEGIN, (void*)SYSTEM_FREE_MEM_END);
 
-    /* HAL library initialization */
-    HAL_Init();
-
-    /* System clock initialization */
-    SystemClock_Config();
-
-    /* usart driver init */
+    /* system usart init */
     RT_CHECK(drv_usart_init());
 
     /* init console to enable console output */
-    FMT_CHECK(console_init());
+    // FMT_CHECK(console_init());
 
-    /* systick driver init */
+    /* system timer init */
     RT_CHECK(drv_systick_init());
 
     /* system time module init */
     FMT_CHECK(systime_init());
+
+    /* init gpio, bus, etc. */
+    // RT_CHECK(drv_gpio_init());
+
+    // /* spi driver init */
+    // RT_CHECK(drv_spi_init());
+
+    // /* init soft i2c */
+    // RT_CHECK(drv_i2c_soft_init());
+
+    // /* pwm driver init */
+    // RT_CHECK(drv_pwm_init());
 
     /* system statistic module */
     FMT_CHECK(sys_stat_init());
@@ -322,30 +285,120 @@ void bsp_early_initialize(void)
 /* this function will be called after rtos start, which is in thread context */
 void bsp_initialize(void)
 {
-    /* enable on-board power supply */
     EnablePower();
 
+    // /* start recording boot log */
+    // FMT_CHECK(boot_log_init());
+
+    // /* init uMCN */
+    // FMT_CHECK(mcn_init());
+
+    // /* create workqueue */
+    // FMT_CHECK(workqueue_manager_init());
+
+    // /* init storage devices */
+    // RT_CHECK(drv_sdio_init());
     /* init file system */
     FMT_CHECK(file_manager_init(mnt_table));
+
+    /* init parameter system */
+//     FMT_CHECK(param_init());
+
+//     /* init usb device */
+//     RT_CHECK(drv_usb_cdc_init());
+
+//     /* adc driver init */
+//     RT_CHECK(drv_adc_init());
+
+//     /* init other devices */
+//     RT_CHECK(tca62724_drv_init("i2c2"));
+
+//     /* register sensor to sensor hub */
+// #if defined(FMT_USING_SIH) || defined(FMT_USING_HIL)
+//     FMT_CHECK(advertise_sensor_imu(0));
+//     FMT_CHECK(advertise_sensor_mag(0));
+//     FMT_CHECK(advertise_sensor_baro(0));
+//     FMT_CHECK(advertise_sensor_gps(0));
+// #else
+//     /* init onboard sensors */
+
+//     /* init imu0 */
+//     RT_CHECK(mpu6000_drv_init("spi1_dev4", "gyro0", "accel0"));
+//     /* init imu1 + mag0 */
+//     RT_CHECK(l3gd20h_drv_init("spi1_dev2", "gyro1"));
+//     RT_CHECK(lsm303d_drv_init("spi1_dev1", "mag0", "accel1"));
+//     /* init barometer */
+//     RT_CHECK(drv_ms5611_init("spi1_dev3", "barometer"));
+//     /* init optical flow module (a mini tf included) */
+//     RT_CHECK(drv_mtf_01_init("serial3"));
+//     /* init gps */
+//     RT_CHECK(gps_m8n_init("serial2", "gps"));
+
+//     /* register sensor to sensor hub */
+//     FMT_CHECK(register_sensor_imu("gyro0", "accel0", 0));
+//     FMT_CHECK(register_sensor_mag("mag0", 0));
+//     FMT_CHECK(register_sensor_barometer("barometer"));
+//     FMT_CHECK(advertise_sensor_optflow(0));
+//     FMT_CHECK(advertise_sensor_rangefinder(0));
+// #endif
 
     /* init finsh */
     finsh_system_init();
     /* Mount finsh to console after finsh system init */
     FMT_CHECK(console_enable_input());
+
+// #ifdef FMT_USING_CM_BACKTRACE
+//     /* cortex-m backtrace */
+//     cm_backtrace_init("fmt_fmu-v2", TARGET_NAME, FMT_VERSION);
+// #endif
+
+// #ifdef FMT_USING_UNIT_TEST
+//     utest_init();
+// #endif
 }
 
 void bsp_post_initialize(void)
 {
     /* toml system configure */
-    __toml_root_tab = toml_parse_config_file(SYS_CONFIG_FILE);
-    if (!__toml_root_tab) {
+    _toml_root_tab = toml_parse_config_file(SYS_CONFIG_FILE);
+    if (!_toml_root_tab) {
         /* use default system configuration */
-        __toml_root_tab = toml_parse_config_string(default_conf);
+        _toml_root_tab = toml_parse_config_string(default_conf);
     }
-    FMT_CHECK(bsp_parse_toml_sysconfig(__toml_root_tab));
+    FMT_CHECK(bsp_parse_toml_sysconfig(_toml_root_tab));
+
+    // /* init rc */
+    // FMT_CHECK(pilot_cmd_init());
+
+    // /* init gcs */
+    // FMT_CHECK(gcs_cmd_init());
+
+    // /* init auto command */
+    // FMT_CHECK(auto_cmd_init());
+
+    // /* init mission data */
+    // FMT_CHECK(mission_data_init());
+
+    // /* init actuator */
+    // FMT_CHECK(actuator_init());
+
+    // /* start msp server */
+    // FMT_CHECK(msp_server_start());
+
+    // /* start device message queue work */
+    // FMT_CHECK(devmq_start_work());
+
+    // /* init led control */
+    // FMT_CHECK(led_control_init());
+
+    // /* initialize power management unit */
+    // FMT_CHECK(pmu_init());
 
     /* show system information */
     bsp_show_information();
+
+    /* dump boot log to file */
+    // boot_log_dump();
 }
 
 /**

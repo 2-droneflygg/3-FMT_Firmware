@@ -19,7 +19,7 @@
 
 // clang-format off
 static char* default_conf = STRING(
-target = "CUAV V5+"\n
+target = "FPV F405AIO"\n
 [console]\n
 	[[console.devices]]\n
 	type = "serial"\n
