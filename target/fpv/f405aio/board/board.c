@@ -42,7 +42,7 @@
 // #include "drv_spi.h"
 #include "drv_systick.h"
 #include "drv_usart.h"
-// #include "drv_usbd_cdc.h"
+#include "drv_usbd_cdc.h"
 // #include "hal/fmtio_dev/fmtio_dev.h"
 // #include "led.h"
 #include "model/control/control_interface.h"
@@ -267,7 +267,7 @@ void bsp_early_initialize(void)
     FMT_CHECK(systime_init());
 
     /* init gpio, bus, etc. */
-    // RT_CHECK(drv_gpio_init());
+    RT_CHECK(drv_gpio_init());
 
     // /* spi driver init */
     // RT_CHECK(drv_spi_init());
@@ -288,24 +288,25 @@ void bsp_initialize(void)
     //EnablePower();
 
     // /* start recording boot log */
-    // FMT_CHECK(boot_log_init());
+    FMT_CHECK(boot_log_init());
 
     // /* init uMCN */
-    // FMT_CHECK(mcn_init());
+    FMT_CHECK(mcn_init());
 
     // /* create workqueue */
     // FMT_CHECK(workqueue_manager_init());
 
     // /* init storage devices */
     // RT_CHECK(drv_sdio_init());
+
     /* init file system */
     FMT_CHECK(file_manager_init(mnt_table));
 
     /* init parameter system */
 //     FMT_CHECK(param_init());
 
-//     /* init usb device */
-//     RT_CHECK(drv_usb_cdc_init());
+    /* init usb device */
+    RT_CHECK(drv_usb_cdc_init());
 
 //     /* adc driver init */
 //     RT_CHECK(drv_adc_init());
@@ -360,12 +361,12 @@ void bsp_initialize(void)
 void bsp_post_initialize(void)
 {
     /* toml system configure */
-    _toml_root_tab = toml_parse_config_file(SYS_CONFIG_FILE);
-    if (!_toml_root_tab) {
-        /* use default system configuration */
-        _toml_root_tab = toml_parse_config_string(default_conf);
-    }
-    FMT_CHECK(bsp_parse_toml_sysconfig(_toml_root_tab));
+    // _toml_root_tab = toml_parse_config_file(SYS_CONFIG_FILE);
+    // if (!_toml_root_tab) {
+    //     /* use default system configuration */
+    //     _toml_root_tab = toml_parse_config_string(default_conf);
+    // }
+    // FMT_CHECK(bsp_parse_toml_sysconfig(_toml_root_tab));
 
     // /* init rc */
     // FMT_CHECK(pilot_cmd_init());
