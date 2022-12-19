@@ -300,7 +300,7 @@ void bsp_initialize(void)
     // RT_CHECK(drv_sdio_init());
 
     /* init file system */
-    FMT_CHECK(file_manager_init(mnt_table));
+    //FMT_CHECK(file_manager_init(mnt_table));
 
     /* init parameter system */
 //     FMT_CHECK(param_init());

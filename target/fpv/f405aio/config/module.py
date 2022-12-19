@@ -5,22 +5,22 @@ MODULES = [
     'console/*.c',
     'system/*.c',
     'ipc/*.c',
-    #'syscmd/*.c',
+    # 'syscmd/*.c',
     'file_manager/*.c',
     # 'ftp/*.c',
     "log/*.c",
-    # "param/*.c",
+    "param/*.c",
     'utils/*.c',
-    # 'mavproxy/*.c',
-    # 'sensor/*.c',
-    # 'sysio/*.c',
+    'mavproxy/*.c',
+    'sensor/*.c',
+    'sysio/*.c',
     'toml/*.c',
-    # 'workqueue/*.c',
-    # 'math/*.c',
-    # 'filter/*.c',
+    'workqueue/*.c',
+    'math/*.c',
+    'filter/*.c',
     # 'fmtio/*.c',
     'task_manager/*.c',
-    # 'pmu/*.c',
+    'pmu/*.c',
 ]
 
 MODULES += [
@@ -30,5 +30,5 @@ MODULES += [
 ]
 
 MODULES_CPPPATH = [
-    # 'calibration',
+    'calibration',
 ]
