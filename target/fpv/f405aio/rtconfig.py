@@ -8,7 +8,7 @@ ARCH = 'arm'
 CPU = 'cortex-m4'
 CROSS_TOOL = 'gcc'
 # build version: debug or release
-BUILD = 'release'
+BUILD = 'debug'
 
 if os.getenv('RTT_CC'):
     CROSS_TOOL = os.getenv('RTT_CC')
@@ -41,7 +41,7 @@ if PLATFORM == 'gcc':
     OBJCPY = PREFIX + 'objcopy'
 
     DEVICE = '  -mcpu=cortex-m4 -mthumb -mfpu=fpv4-sp-d16 -mfloat-abi=hard -ffunction-sections -fdata-sections'
-    CFLAGS = DEVICE + ' -g -Wall -Wstrict-aliasing=0 -Wno-uninitialized -Wno-unused-function -Wno-switch -DUSE_STDPERIPH_DRIVER -DSTM32F427X -D__VFP_FP__ -DARM_MATH_MATRIX_CHECK -DARM_MATH_CM4 -D__FPU_PRESENT="1" -D__FPU_USED="1"'
+    CFLAGS = DEVICE + ' -g -Wall -Wstrict-aliasing=0 -Wno-uninitialized -Wno-unused-function -Wno-switch -DUSE_STDPERIPH_DRIVER -DSTM32F40XX -D__VFP_FP__ -DARM_MATH_MATRIX_CHECK -DARM_MATH_CM4 -D__FPU_PRESENT="1" -D__FPU_USED="1"'
     AFLAGS = ' -c' + DEVICE + ' -x assembler-with-cpp -Wa,-mimplicit-it=thumb '
     LFLAGS = DEVICE + ' -lm -lgcc -lc' + \
         ' -nostartfiles -Wl,--gc-sections,-Map=build/fmt_' + BOARD + '.map,-cref,-u,Reset_Handler -T link.lds'

@@ -36,8 +36,8 @@
 #define USING_UART3
 #define USING_UART4
 #define USING_UART6
-#define USING_UART7
-#define USING_UART8
+// #define USING_UART7
+// #define USING_UART8
 
 /* UART GPIO define. */
 #define UART1_GPIO_TX       GPIO_Pin_9
