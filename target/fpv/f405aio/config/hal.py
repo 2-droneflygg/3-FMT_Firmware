@@ -18,7 +18,7 @@ HAL = [
     # 'actuator/*.c',
     # 'rc/*.c',
     # 'gps/*.c',
-    # 'adc/*.c',
+    'adc/*.c',
     # 'mtd/*.c',
     # 'airspeed/*.c',
 ]

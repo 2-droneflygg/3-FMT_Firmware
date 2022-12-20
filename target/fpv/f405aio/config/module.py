@@ -20,13 +20,15 @@ MODULES = [
     # 'filter/*.c',
     # 'fmtio/*.c',
     'task_manager/*.c',
-    # 'pmu/*.c',
+    'pmu/*.c',
 ]
 
 MODULES += [
     'syscmd/optparse.c',
     'syscmd/syscmd.c',
     'syscmd/cmd_ps.c',
+    'syscmd/cmd_test.c',
+    'syscmd/cmd_mcn.c',
 ]
 
 MODULES_CPPPATH = [

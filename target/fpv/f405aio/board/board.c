@@ -34,7 +34,7 @@
 // #include "driver/imu/mpu6000.h"
 // #include "driver/rgb_led/tca62724.h"
 // #include "driver/vision_flow/mtf_01.h"
-// #include "drv_adc.h"
+#include "drv_adc.h"
 #include "drv_gpio.h"
 // #include "drv_i2c_soft.h"
 // #include "drv_pwm.h"
@@ -309,7 +309,7 @@ void bsp_initialize(void)
     RT_CHECK(drv_usb_cdc_init());
 
 //     /* adc driver init */
-//     RT_CHECK(drv_adc_init());
+RT_CHECK(drv_adc_init());
 
 //     /* init other devices */
 //     RT_CHECK(tca62724_drv_init("i2c2"));
@@ -393,7 +393,7 @@ void bsp_post_initialize(void)
     // FMT_CHECK(led_control_init());
 
     // /* initialize power management unit */
-    // FMT_CHECK(pmu_init());
+    FMT_CHECK(pmu_init());
 
     /* show system information */
     bsp_show_information();
