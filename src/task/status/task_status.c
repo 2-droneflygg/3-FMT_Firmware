@@ -121,9 +121,9 @@ static void update_fms_status(void)
                 LOG_I("[Status] Arm");
 
                 /* start mlog from arm */
-                if (PARAM_GET_INT32(SYSTEM, MLOG_MODE) == 1 && mlog_get_status() == MLOG_STATUS_IDLE) {
-                    logger_start_mlog(NULL);
-                }
+                // if (PARAM_GET_INT32(SYSTEM, MLOG_MODE) == 1 && mlog_get_status() == MLOG_STATUS_IDLE) {
+                //     logger_start_mlog(NULL);
+                // }
                 break;
 
             default:
@@ -299,7 +299,7 @@ TASK_EXPORT __fmt_task_desc = {
     .entry = task_status_entry,
     .priority = STATUS_THREAD_PRIORITY,
     .auto_start = true,
-    .stack_size = 4096,
+    .stack_size = 2048,
     .param = NULL,
     .dependency = NULL
 };

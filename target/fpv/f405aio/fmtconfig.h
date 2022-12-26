@@ -19,7 +19,7 @@
 
 #define VEHICLE_TYPE "Quadcopter"
 
-// #define FMT_USING_CHECKED
+#define FMT_USING_CHECKED
 
 /* HIL simulation */
 // #define FMT_USING_HIL
@@ -33,7 +33,7 @@
 #define FMT_OUTPUT_PILOT_CMD
 
 /* MLog */
-#define MLOG_BUFFER_SIZE         128 * 1024
+#define MLOG_BUFFER_SIZE         1 * 1024
 #define MLOG_SECTOR_SIZE         4096
 #define MLOG_MAX_SECTOR_TO_WRITE 5
 

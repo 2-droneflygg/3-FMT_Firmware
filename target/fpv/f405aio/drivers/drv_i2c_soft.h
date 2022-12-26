@@ -1,5 +1,5 @@
 /******************************************************************************
- * Copyright 2021 The Firmament Authors. All Rights Reserved.
+ * Copyright 2020-2021 The Firmament Authors. All Rights Reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,31 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *****************************************************************************/
+
+#ifndef DRV_I2C_SOFT_H__
+#define DRV_I2C_SOFT_H__
+
 #include <firmament.h>
 
-#include "module/task_manager/task_manager.h"
+#ifdef __cplusplus
+extern "C" {
+#endif
 
-fmt_err_t task_local_init(void)
-{
-    return FMT_EOK;
+rt_err_t drv_i2c_soft_init(void);
+
+#ifdef __cplusplus
 }
+#endif
 
-void task_local_entry(void* parameter)
-{
-    printf("Hello FMT! This is a local demo task.\n");
-
-    while (1) {
-        sys_msleep(1000);
-    }
-}
-
-// TASK_EXPORT __fmt_task_desc = {
-//     .name = "local",
-//     .init = task_local_init,
-//     .entry = task_local_entry,
-//     .priority = 25,
-//     .auto_start = false,
-//     .stack_size = 1024,
-//     .param = NULL,
-//     .dependency = NULL
-// };
+#endif

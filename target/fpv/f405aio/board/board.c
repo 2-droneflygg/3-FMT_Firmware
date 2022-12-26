@@ -31,15 +31,16 @@
 // #include "driver/gps/gps_m8n.h"
 // #include "driver/imu/l3gd20h.h"
 // #include "driver/imu/lsm303d.h"
-// #include "driver/imu/mpu6000.h"
+#include "driver/imu/mpu6000.h"
 // #include "driver/rgb_led/tca62724.h"
 // #include "driver/vision_flow/mtf_01.h"
+#include "driver/mtd/w25qxx.h"
 #include "drv_adc.h"
 #include "drv_gpio.h"
-// #include "drv_i2c_soft.h"
+#include "drv_i2c_soft.h"
 // #include "drv_pwm.h"
 // #include "drv_sdio.h"
-// #include "drv_spi.h"
+#include "drv_spi.h"
 #include "drv_systick.h"
 #include "drv_usart.h"
 #include "drv_usbd_cdc.h"
@@ -76,7 +77,8 @@
 #define SYS_CONFIG_FILE "/sys/sysconfig.toml"
 
 static const struct dfs_mount_tbl mnt_table[] = {
-    { "sd0", "/", "elm", 0, NULL },
+    { "mtdblk0", "/", "elm", 0, NULL },
+    //{ "sd0", "/", "elm", 0, NULL },
     { NULL } /* NULL indicate the end */
 };
 
@@ -142,37 +144,6 @@ static void bsp_show_information(void)
     }
 }
 
-/**
- * @brief Enable on-board device power supply
- * 
- */
-static void EnablePower(void)
-{
-    GPIO_InitTypeDef GPIO_InitStructure = { 0 };
-
-    RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOA, ENABLE);
-    RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOE, ENABLE);
-
-    GPIO_InitStructure.GPIO_Pin = GPIO_Pin_8;
-    GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
-    GPIO_InitStructure.GPIO_Speed = GPIO_Speed_100MHz;
-    GPIO_InitStructure.GPIO_Mode = GPIO_Mode_OUT;
-    GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_NOPULL;
-    GPIO_Init(GPIOA, &GPIO_InitStructure);
-    GPIO_ResetBits(GPIOA, GPIO_Pin_8);
-
-    GPIO_InitStructure.GPIO_Pin = GPIO_Pin_3;
-    GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
-    GPIO_InitStructure.GPIO_Speed = GPIO_Speed_100MHz;
-    GPIO_InitStructure.GPIO_Mode = GPIO_Mode_OUT;
-    GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_NOPULL;
-    GPIO_Init(GPIOE, &GPIO_InitStructure);
-    GPIO_SetBits(GPIOE, GPIO_Pin_3);
-
-    /* Wait some time for power becoming stable */
-    systime_mdelay(100);
-}
-
 static void NVIC_Configuration(void)
 {
 #ifdef VECT_TAB_RAM
@@ -225,16 +196,16 @@ static fmt_err_t bsp_parse_toml_sysconfig(toml_table_t* root_tab)
                 if (MATCH(key, "console")) {
                     err = console_toml_config(sub_tab);
                 } 
-                // else if (MATCH(key, "mavproxy")) {
-                //     err = mavproxy_toml_config(sub_tab);
-                // } else if (MATCH(key, "pilot-cmd")) {
-                //     err = pilot_cmd_toml_config(sub_tab);
-                // } else if (MATCH(key, "actuator")) {
-                //     err = actuator_toml_config(sub_tab);
-                // } else {
-                //     console_printf("unknown table: %s\n", key);
-                //     continue;
-                //}
+                else if (MATCH(key, "mavproxy")) {
+                    err = mavproxy_toml_config(sub_tab);
+                } else if (MATCH(key, "pilot-cmd")) {
+                    err = pilot_cmd_toml_config(sub_tab);
+                } else if (MATCH(key, "actuator")) {
+                    err = actuator_toml_config(sub_tab);
+                } else {
+                    console_printf("unknown table: %s\n", key);
+                    continue;
+                }
             }
         }
     }
@@ -270,10 +241,10 @@ void bsp_early_initialize(void)
     RT_CHECK(drv_gpio_init());
 
     // /* spi driver init */
-    // RT_CHECK(drv_spi_init());
+    RT_CHECK(drv_spi_init());
 
-    // /* init soft i2c */
-    // RT_CHECK(drv_i2c_soft_init());
+    /* init soft i2c */
+    RT_CHECK(drv_i2c_soft_init());
 
     // /* pwm driver init */
     // RT_CHECK(drv_pwm_init());
@@ -294,54 +265,56 @@ void bsp_initialize(void)
     FMT_CHECK(mcn_init());
 
     // /* create workqueue */
-    // FMT_CHECK(workqueue_manager_init());
+    FMT_CHECK(workqueue_manager_init());
 
     // /* init storage devices */
     // RT_CHECK(drv_sdio_init());
-
+    RT_CHECK(drv_w25qxx_init("spi3_dev1", "mtdblk0"));
     /* init file system */
     FMT_CHECK(file_manager_init(mnt_table));
 
     /* init parameter system */
-//     FMT_CHECK(param_init());
+    FMT_CHECK(param_init());
 
     /* init usb device */
     RT_CHECK(drv_usb_cdc_init());
 
-//     /* adc driver init */
-RT_CHECK(drv_adc_init());
+    /* adc driver init */
+    RT_CHECK(drv_adc_init());
 
 //     /* init other devices */
 //     RT_CHECK(tca62724_drv_init("i2c2"));
 
-//     /* register sensor to sensor hub */
-// #if defined(FMT_USING_SIH) || defined(FMT_USING_HIL)
-//     FMT_CHECK(advertise_sensor_imu(0));
-//     FMT_CHECK(advertise_sensor_mag(0));
-//     FMT_CHECK(advertise_sensor_baro(0));
-//     FMT_CHECK(advertise_sensor_gps(0));
-// #else
-//     /* init onboard sensors */
+    /* register sensor to sensor hub */
+#if defined(FMT_USING_SIH) || defined(FMT_USING_HIL)
+    FMT_CHECK(advertise_sensor_imu(0));
+    FMT_CHECK(advertise_sensor_mag(0));
+    FMT_CHECK(advertise_sensor_baro(0));
+    FMT_CHECK(advertise_sensor_gps(0));
+#else
+    /* init onboard sensors */
 
-//     /* init imu0 */
-//     RT_CHECK(mpu6000_drv_init("spi1_dev4", "gyro0", "accel0"));
-//     /* init imu1 + mag0 */
-//     RT_CHECK(l3gd20h_drv_init("spi1_dev2", "gyro1"));
-//     RT_CHECK(lsm303d_drv_init("spi1_dev1", "mag0", "accel1"));
-//     /* init barometer */
-//     RT_CHECK(drv_ms5611_init("spi1_dev3", "barometer"));
-//     /* init optical flow module (a mini tf included) */
-//     RT_CHECK(drv_mtf_01_init("serial3"));
-//     /* init gps */
-//     RT_CHECK(gps_m8n_init("serial2", "gps"));
+    /* init imu0 */
+    RT_CHECK(mpu6000_drv_init("spi1_dev1", "gyro0", "accel0"));
+    /* init imu1 + mag0 */
+    // RT_CHECK(l3gd20h_drv_init("spi1_dev2", "gyro1"));
+    // RT_CHECK(lsm303d_drv_init("spi1_dev1", "mag0", "accel1"));
 
-//     /* register sensor to sensor hub */
-//     FMT_CHECK(register_sensor_imu("gyro0", "accel0", 0));
-//     FMT_CHECK(register_sensor_mag("mag0", 0));
-//     FMT_CHECK(register_sensor_barometer("barometer"));
-//     FMT_CHECK(advertise_sensor_optflow(0));
-//     FMT_CHECK(advertise_sensor_rangefinder(0));
-// #endif
+    // /* init barometer */
+    //RT_CHECK(drv_spl06_init("i2c1", "barometer"));
+
+    // /* init optical flow module (a mini tf included) */
+    // RT_CHECK(drv_mtf_01_init("serial3"));
+    // /* init gps */
+    // RT_CHECK(gps_m8n_init("serial2", "gps"));
+
+    /* register sensor to sensor hub */
+    FMT_CHECK(register_sensor_imu("gyro0", "accel0", 0));
+    // FMT_CHECK(register_sensor_mag("mag0", 0));
+    //FMT_CHECK(register_sensor_barometer("barometer"));
+    // FMT_CHECK(advertise_sensor_optflow(0));
+    // FMT_CHECK(advertise_sensor_rangefinder(0));
+#endif
 
     /* init finsh */
     finsh_system_init();
@@ -361,33 +334,33 @@ RT_CHECK(drv_adc_init());
 void bsp_post_initialize(void)
 {
     /* toml system configure */
-    // _toml_root_tab = toml_parse_config_file(SYS_CONFIG_FILE);
-    // if (!_toml_root_tab) {
-    //     /* use default system configuration */
-    //     _toml_root_tab = toml_parse_config_string(default_conf);
-    // }
-    // FMT_CHECK(bsp_parse_toml_sysconfig(_toml_root_tab));
+    _toml_root_tab = toml_parse_config_file(SYS_CONFIG_FILE);
+    if (!_toml_root_tab) {
+        /* use default system configuration */
+        _toml_root_tab = toml_parse_config_string(default_conf);
+    }
+    FMT_CHECK(bsp_parse_toml_sysconfig(_toml_root_tab));
 
-    // /* init rc */
-    // FMT_CHECK(pilot_cmd_init());
+    /* init rc */
+    FMT_CHECK(pilot_cmd_init());
 
-    // /* init gcs */
-    // FMT_CHECK(gcs_cmd_init());
+    /* init gcs */
+    FMT_CHECK(gcs_cmd_init());
 
-    // /* init auto command */
-    // FMT_CHECK(auto_cmd_init());
+    /* init auto command */
+    FMT_CHECK(auto_cmd_init());
 
-    // /* init mission data */
-    // FMT_CHECK(mission_data_init());
+    /* init mission data */
+    FMT_CHECK(mission_data_init());
 
     // /* init actuator */
-    // FMT_CHECK(actuator_init());
+    FMT_CHECK(actuator_init());
 
     // /* start msp server */
-    // FMT_CHECK(msp_server_start());
+    FMT_CHECK(msp_server_start());
 
-    // /* start device message queue work */
-    // FMT_CHECK(devmq_start_work());
+    /* start device message queue work */
+    FMT_CHECK(devmq_start_work());
 
     // /* init led control */
     // FMT_CHECK(led_control_init());

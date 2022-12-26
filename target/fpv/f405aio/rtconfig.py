@@ -8,7 +8,8 @@ ARCH = 'arm'
 CPU = 'cortex-m4'
 CROSS_TOOL = 'gcc'
 # build version: debug or release
-BUILD = 'debug'
+BUILD = 'release'
+#BUILD = 'debug'
 
 if os.getenv('RTT_CC'):
     CROSS_TOOL = os.getenv('RTT_CC')

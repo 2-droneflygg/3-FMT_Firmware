@@ -12,11 +12,11 @@ src += Glob('STM32F4xx_StdPeriph_Driver/src/*.c')
 
 #add for startup script 
 if rtconfig.CROSS_TOOL == 'gcc':
-     src = src + ['CMSIS/Device/ST/STM32F4xx/Source/Templates/gcc_ride7/startup_stm32f427x.s']
+     src = src + ['CMSIS/Device/ST/STM32F4xx/Source/Templates/gcc_ride7/startup_stm32f40xx.s']
 elif rtconfig.CROSS_TOOL == 'keil':
-     src = src + ['CMSIS/Device/ST/STM32F4xx/Source/Templates/arm/startup_stm32f427x.s']
+     src = src + ['CMSIS/Device/ST/STM32F4xx/Source/Templates/arm/startup_stm32f40xx.s']
 elif rtconfig.CROSS_TOOL == 'iar':
-    src = src + ['CMSIS/Device/ST/STM32F4xx/Source/Templates/iar/startup_stm32f427x.s']
+    src = src + ['CMSIS/Device/ST/STM32F4xx/Source/Templates/iar/startup_stm32f40xx.s']
 
 #add for DSP library
 src += Glob('CMSIS/DSP_Lib/Source/FastMathFunctions/*f32.c')
