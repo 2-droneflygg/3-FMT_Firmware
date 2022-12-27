@@ -19,7 +19,7 @@
 
 #define VEHICLE_TYPE "Quadcopter"
 
-#define FMT_USING_CHECKED
+//#define FMT_USING_CHECKED
 
 /* HIL simulation */
 // #define FMT_USING_HIL
