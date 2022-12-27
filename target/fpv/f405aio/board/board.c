@@ -28,6 +28,7 @@
 
 #include "default_config.h"
 // #include "driver/barometer/ms5611.h"
+#include "driver/barometer/spl06.h"
 // #include "driver/gps/gps_m8n.h"
 // #include "driver/imu/l3gd20h.h"
 // #include "driver/imu/lsm303d.h"

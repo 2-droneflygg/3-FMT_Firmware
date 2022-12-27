@@ -21,21 +21,22 @@
 #include "hal/i2c/i2c_bit_ops.h"
 #include "hal/pin/pin.h"
 
+#define BSP_I2C1_SDA_PORT GPIOB
+#define BSP_I2C1_SCL_PORT GPIOB
+#define BSP_I2C1_SCL_PIN GPIO_Pin_8
+#define BSP_I2C1_SDA_PIN GPIO_Pin_9
+
 #define BSP_I2C2_SDA_PORT GPIOB
 #define BSP_I2C2_SCL_PORT GPIOB
 #define BSP_I2C2_SDA_PIN GPIO_Pin_11
 #define BSP_I2C2_SCL_PIN GPIO_Pin_10
 
-#define BSP_I2C1_SDA_PORT GPIOB
-#define BSP_I2C1_SCL_PORT GPIOB
-#define BSP_I2C1_SCL_PIN GPIO_Pin_6
-#define BSP_I2C1_SDA_PIN GPIO_Pin_7
-
 #define I2C_DELAY_US      (10)
 #define I2C_TIMEOUT_TICKS TICKS_FROM_MS(1)
 
-#define FMU_I2C1_PIN_SCL 58
-#define FMU_I2C1_PIN_SDA 59
+#define FMU_I2C1_PIN_SCL 61
+#define FMU_I2C1_PIN_SDA 62
+
 #define FMU_I2C2_PIN_SCL 47
 #define FMU_I2C2_PIN_SDA 48
 
