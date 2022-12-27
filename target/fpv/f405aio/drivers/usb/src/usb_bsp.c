@@ -96,7 +96,7 @@ void USB_OTG_BSP_Init(USB_OTG_CORE_HANDLE* pdev)
     GPIO_InitTypeDef GPIO_InitStructure;
     #ifdef USE_USB_OTG_FS
     RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOA, ENABLE);
-
+    RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOC, ENABLE);
     /* Configure SOF ID DM DP Pins */
     GPIO_InitStructure.GPIO_Pin = //GPIO_Pin_8 |
         GPIO_Pin_11 | GPIO_Pin_12;
@@ -112,12 +112,12 @@ void USB_OTG_BSP_Init(USB_OTG_CORE_HANDLE* pdev)
     GPIO_PinAFConfig(GPIOA, GPIO_PinSource12, GPIO_AF_OTG1_FS);
 
     /* Configure  VBUS Pin */
-    GPIO_InitStructure.GPIO_Pin = GPIO_Pin_9;
+    GPIO_InitStructure.GPIO_Pin = GPIO_Pin_5;
     GPIO_InitStructure.GPIO_Speed = GPIO_Speed_100MHz;
     GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN;
     GPIO_InitStructure.GPIO_OType = GPIO_OType_OD;
     GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_NOPULL;
-    GPIO_Init(GPIOA, &GPIO_InitStructure);
+    GPIO_Init(GPIOC, &GPIO_InitStructure);
 
     /* Configure ID pin */
     //  GPIO_InitStructure.GPIO_Pin =  GPIO_Pin_10;
