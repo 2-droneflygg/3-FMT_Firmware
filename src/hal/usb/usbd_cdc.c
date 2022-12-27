@@ -19,7 +19,7 @@
 #include "module/utils/devmq.h"
 
 #define USBD_WAIT_TIMEOUT 1000
-#define USBD_RX_FIFO_SIZE 2048
+#define USBD_RX_FIFO_SIZE 512
 
 static rt_err_t hal_usbd_cdc_init(rt_device_t device)
 {
