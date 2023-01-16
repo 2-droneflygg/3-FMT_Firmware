@@ -23,4 +23,5 @@
     "[jsonc]": {
         "editor.defaultFormatter": "vscode.json-language-features"
     },
+    "ros.distro": "melodic",
 }

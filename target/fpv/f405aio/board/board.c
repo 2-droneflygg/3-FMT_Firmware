@@ -296,7 +296,7 @@ void bsp_initialize(void)
     /* init onboard sensors */
 
     /* init imu0 */
-    RT_CHECK(mpu6000_drv_init("spi1_dev1", "gyro0", "accel0"));
+    //RT_CHECK(mpu6000_drv_init("spi1_dev1", "gyro0", "accel0"));
     /* init imu1 + mag0 */
     // RT_CHECK(l3gd20h_drv_init("spi1_dev2", "gyro1"));
     // RT_CHECK(lsm303d_drv_init("spi1_dev1", "mag0", "accel1"));
@@ -310,7 +310,7 @@ void bsp_initialize(void)
     // RT_CHECK(gps_m8n_init("serial2", "gps"));
 
     /* register sensor to sensor hub */
-    FMT_CHECK(register_sensor_imu("gyro0", "accel0", 0));
+    //FMT_CHECK(register_sensor_imu("gyro0", "accel0", 0));
     // FMT_CHECK(register_sensor_mag("mag0", 0));
     //FMT_CHECK(register_sensor_barometer("barometer"));
     // FMT_CHECK(advertise_sensor_optflow(0));
