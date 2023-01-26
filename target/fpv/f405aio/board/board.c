@@ -45,6 +45,7 @@
 #include "drv_systick.h"
 #include "drv_usart.h"
 #include "drv_usbd_cdc.h"
+#include "drv_rc.h"
 // #include "hal/fmtio_dev/fmtio_dev.h"
 // #include "led.h"
 #include "model/control/control_interface.h"
@@ -249,6 +250,9 @@ void bsp_early_initialize(void)
 
     // /* pwm driver init */
     // RT_CHECK(drv_pwm_init());
+
+    /* init remote controller driver */
+    RT_CHECK(drv_rc_init());
 
     /* system statistic module */
     FMT_CHECK(sys_stat_init());

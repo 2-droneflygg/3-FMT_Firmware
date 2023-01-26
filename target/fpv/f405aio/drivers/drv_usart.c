@@ -33,7 +33,7 @@
 
 // #define USING_UART1
 #define USING_UART2
-#define USING_UART3
+//#define USING_UART3
 #define USING_UART4
 #define USING_UART6
 // #define USING_UART7

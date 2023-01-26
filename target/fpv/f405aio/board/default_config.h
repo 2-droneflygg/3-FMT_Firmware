@@ -23,7 +23,7 @@ target = "FPV F405AIO"\n
 [console]\n
 	[[console.devices]]\n
 	type = "serial"\n
-	name = "serial0"\n
+	name = "serial2"\n
 	baudrate = 57600\n
 	// auto-switch = true\n
 	// [[console.devices]]\n
@@ -38,6 +38,17 @@ target = "FPV F405AIO"\n
     [[mavproxy.devices]]\n
 	type = "usb"\n
 	name = "usbd0"\n
-    auto-switch = true
+    auto-switch = true\n
+
+[pilot-cmd]\n
+    // channel mapping for [yaw, throttle, roll, pitch]
+    stick-channel = [4,3,1,2]\n
+    [pilot-cmd.device]\n
+    type = "rc"\n
+    name = "rc"\n
+    protocol = "sbus"\n           //sbus or ppm
+    channel-num = 10\n             // max supported channel: sbus:16, ppm:8
+    sample-time = 0.05\n          //sample time in second (-1 for inherit)
+    range = [1000,2000]
 );
 // clang-format on
