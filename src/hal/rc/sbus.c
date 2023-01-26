@@ -462,7 +462,7 @@ rt_err_t sbus_decoder_init(sbus_decoder_t* decoder)
     decoder->sbus_decode_state = SBUS_DECODE_STATE_DESYNC;
     decoder->max_channels = MAX_SBUS_CHANNEL;
 
-    decoder->sbus_rb = ringbuffer_create(2048);
+    decoder->sbus_rb = ringbuffer_create(1024);
     if (decoder->sbus_rb == NULL) {
         printf("Fail to create sbus ring buffer!\n");
         return RT_ENOMEM;
