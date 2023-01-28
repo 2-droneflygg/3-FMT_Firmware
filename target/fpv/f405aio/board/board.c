@@ -249,7 +249,7 @@ void bsp_early_initialize(void)
     RT_CHECK(drv_i2c_soft_init());
 
     // /* pwm driver init */
-    // RT_CHECK(drv_pwm_init());
+    RT_CHECK(drv_pwm_init());
 
     /* init remote controller driver */
     RT_CHECK(drv_rc_init());

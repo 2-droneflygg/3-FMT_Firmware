@@ -49,6 +49,17 @@ target = "FPV F405AIO"\n
     protocol = "sbus"\n           //sbus or ppm
     channel-num = 10\n             // max supported channel: sbus:16, ppm:8
     sample-time = 0.05\n          //sample time in second (-1 for inherit)
-    range = [1000,2000]
+    range = [1000,2000]\n
+
+[actuator]\n
+    [[actuator.devices]]\n
+    protocol = "pwm"\n
+    name = "main_out"\n
+    freq = 400\n                  // pwm frequency in Hz
+
+    [[actuator.mappings]]\n
+    from = "rc_channels"\n
+    to = "main_out"\n
+    chan-map = [[2,2,2,2],[1,2,3,4]]
 );
 // clang-format on
