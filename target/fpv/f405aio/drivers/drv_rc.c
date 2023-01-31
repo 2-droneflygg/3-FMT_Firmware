@@ -40,20 +40,32 @@
 static ppm_decoder_t ppm_decoder;
 static sbus_decoder_t sbus_decoder;
 
-#define UART3_GPIO_TX        GPIO_Pin_10
-#define UART3_TX_PIN_SOURCE  GPIO_PinSource10
-#define UART3_GPIO_RX        GPIO_Pin_11
-#define UART3_RX_PIN_SOURCE  GPIO_PinSource11
-#define UART3_GPIO           GPIOB
-#define UART3_GPIO_RCC       RCC_AHB1Periph_GPIOB
-#define RCC_APBPeriph_UART3  RCC_APB1Periph_USART3
 
-void USART3_IRQHandler(void)
+/* UART GPIO define. */
+#define UART_GPIO_TX       GPIO_Pin_6
+#define UART_TX_PIN_SOURCE GPIO_PinSource6
+#define UART_GPIO_TX_PORT  GPIOB
+#define UART_GPIO_TX_RCC   RCC_AHB1Periph_GPIOB
+
+#define UART_GPIO_RX       GPIO_Pin_10
+#define UART_RX_PIN_SOURCE GPIO_PinSource10
+#define UART_GPIO_RX_PORT  GPIOA
+#define UART_GPIO_RX_RCC   RCC_AHB1Periph_GPIOA
+
+#define RCC_APBPeriph_UART RCC_APB2Periph_USART1
+
+#define USART_IRQ          USART1_IRQn
+#define USART_NUM          USART1
+
+//#define USE_APB1
+#define USE_APB2
+
+void USART1_IRQHandler(void)
 {
     uint8_t ch;
     rt_interrupt_enter();
-    if (USART_GetITStatus(USART3, USART_IT_RXNE) != RESET) {
-        ch = USART_ReceiveData(USART3); /* this process will clear EXNE flag */
+    if (USART_GetITStatus(USART_NUM, USART_IT_RXNE) != RESET) {
+        ch = USART_ReceiveData(USART_NUM); /* this process will clear EXNE flag */
         sbus_input(&sbus_decoder, &ch, 1);
         if (!sbus_islock(&sbus_decoder)) {
             sbus_update(&sbus_decoder);
@@ -100,23 +112,31 @@ static rt_err_t sbus_lowlevel_init(void)
 
     GPIO_InitTypeDef GPIO_InitStructure;
 
-    RCC_AHB1PeriphClockCmd(UART3_GPIO_RCC, ENABLE);
-    /* Enable UART3 clock */
-    RCC_APB1PeriphClockCmd(RCC_APBPeriph_UART3, ENABLE);
+    RCC_AHB1PeriphClockCmd(UART_GPIO_RX_RCC, ENABLE);
+    RCC_AHB1PeriphClockCmd(UART_GPIO_TX_RCC, ENABLE);
+    /* Enable UART1 clock */
+    #ifdef USE_APB1
+    RCC_APB1PeriphClockCmd(RCC_APBPeriph_UART, ENABLE);
+    #else
+    RCC_APB2PeriphClockCmd(RCC_APBPeriph_UART, ENABLE);
+    #endif
 
     GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF;
     GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
     GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_UP;
     GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
-    GPIO_InitStructure.GPIO_Pin = UART3_GPIO_TX | UART3_GPIO_RX;
-    GPIO_Init(UART3_GPIO, &GPIO_InitStructure);
+    GPIO_InitStructure.GPIO_Pin = UART_GPIO_RX;
+    GPIO_Init(UART_GPIO_RX_PORT, &GPIO_InitStructure);
+
+    GPIO_InitStructure.GPIO_Pin = UART_GPIO_TX;
+    GPIO_Init(UART_GPIO_TX_PORT, &GPIO_InitStructure);
 
     /* Connect alternate function */
-    GPIO_PinAFConfig(UART3_GPIO, UART3_TX_PIN_SOURCE, GPIO_AF_USART3);
-    GPIO_PinAFConfig(UART3_GPIO, UART3_RX_PIN_SOURCE, GPIO_AF_USART3);
+    GPIO_PinAFConfig(UART_GPIO_TX_PORT, UART_TX_PIN_SOURCE, GPIO_AF_USART1);
+    GPIO_PinAFConfig(UART_GPIO_RX_PORT, UART_RX_PIN_SOURCE, GPIO_AF_USART1);
     
-    NVIC_Configuration(USART3_IRQn);
-    usart_configure(USART3);
+    NVIC_Configuration(USART_IRQ);
+    usart_configure(USART_NUM);
 
     return RT_EOK;
 }
