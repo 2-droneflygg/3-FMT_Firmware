@@ -32,7 +32,7 @@
 // #include "driver/gps/gps_m8n.h"
 // #include "driver/imu/l3gd20h.h"
 // #include "driver/imu/lsm303d.h"
-//#include "driver/imu/mpu6000.h"
+#include "driver/imu/mpu6000.h"
 #include "driver/imu/icm42688.h"
 // #include "driver/rgb_led/tca62724.h"
 // #include "driver/vision_flow/mtf_01.h"
@@ -301,11 +301,11 @@ void bsp_initialize(void)
     /* init onboard sensors */
 
     /* init imu0 */
-    //RT_CHECK(mpu6000_drv_init("spi1_dev1", "gyro0", "accel0"));
+    RT_CHECK(mpu6000_drv_init("spi1_dev1", "gyro0", "accel0"));
     /* init imu1 + mag0 */
     // RT_CHECK(l3gd20h_drv_init("spi1_dev2", "gyro1"));
     // RT_CHECK(lsm303d_drv_init("spi1_dev1", "mag0", "accel1"));
-    RT_CHECK(drv_icm42688_init("spi1_dev1", "gyro0", "accel0"));
+    //RT_CHECK(drv_icm42688_init("spi1_dev1", "gyro0", "accel0"));
     // /* init barometer */
     //RT_CHECK(drv_spl06_init("i2c1", "barometer"));
 

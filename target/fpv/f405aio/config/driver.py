@@ -2,7 +2,7 @@
 
 DRIVERS = [
     # 'imu/icm20689.c',
-    #'imu/mpu6000.c',
+    'imu/mpu6000.c',
     'imu/icm42688.c',
     # 'imu/bmi055.c',
     # 'mag/ist8310.c',
