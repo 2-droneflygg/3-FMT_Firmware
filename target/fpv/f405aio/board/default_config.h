@@ -58,8 +58,8 @@ target = "FPV F405AIO"\n
     freq = 400\n                  // pwm frequency in Hz
 
     [[actuator.mappings]]\n
-    from = "rc_channels"\n
+    from = "control_out"\n
     to = "main_out"\n
-    chan-map = [[2,2,2,2],[1,2,3,4]]
+    chan-map = [[1,2,3,4],[1,2,3,4]]
 );
 // clang-format on
