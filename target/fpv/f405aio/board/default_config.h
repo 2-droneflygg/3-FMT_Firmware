@@ -23,7 +23,7 @@ target = "FPV F405AIO"\n
 [console]\n
 	[[console.devices]]\n
 	type = "serial"\n
-	name = "serial2"\n
+	name = "serial5"\n//usart6
 	baudrate = 57600\n
 	// auto-switch = true\n
 	// [[console.devices]]\n
