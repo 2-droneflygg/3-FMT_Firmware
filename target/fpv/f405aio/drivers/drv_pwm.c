@@ -32,7 +32,7 @@
 #define DC_TO_VAL(_dc)        (1000000.0f / _pwm_freq * _dc)
 
 #define PWM_ARR(freq) (TIMER_FREQUENCY / freq) // CCR reload value, Timer frequency = 3M/60K = 50 Hz
-#define PWM_TIMER(id) (id < 2 ? TIM3 : TIM5)
+#define PWM_TIMER(id) (((id % 2)==0) ? TIM3 : TIM5)
 
 static int _pwm_freq = PWM_DEFAULT_FREQUENCY;
 static float _pwm_fmu_duty_cyc[MAX_PWM_OUT_CHAN] = { 0.00, 0.00, 0.00, 0.00};
@@ -40,9 +40,9 @@ static float _pwm_fmu_duty_cyc[MAX_PWM_OUT_CHAN] = { 0.00, 0.00, 0.00, 0.00};
 typedef void (*timer_func)(TIM_TypeDef*, uint32_t);
 timer_func _timer_set_compare[MAX_PWM_OUT_CHAN] = {
     TIM_SetCompare3,
-    TIM_SetCompare4,
-    TIM_SetCompare4,
     TIM_SetCompare3,
+    TIM_SetCompare4,
+    TIM_SetCompare4,
 };
 
 static void _pwm_gpio_init(void)
