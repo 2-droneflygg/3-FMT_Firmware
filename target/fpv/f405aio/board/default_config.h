@@ -51,6 +51,17 @@ target = "FPV F405AIO"\n
     sample-time = 0.05\n          //sample time in second (-1 for inherit)
     range = [1000,2000]\n
 
+    [[pilot-cmd.mode]]\n
+    mode = 4\n                    // stabilize mode
+    channel = 5\n
+    range = [1800,2000]\n
+
+    [[pilot-cmd.command]]\n
+    type = 1\n                    // 1:event | 2:status
+    cmd = 1002\n                  // FMS_Cmd_Disarm
+    channel = 6\n
+    range = [1800,2000]\n
+
 [actuator]\n
     [[actuator.devices]]\n
     protocol = "pwm"\n
