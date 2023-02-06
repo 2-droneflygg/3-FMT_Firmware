@@ -34,6 +34,7 @@ MODULES += [
     'syscmd/cmd_rc.c',
     'syscmd/cmd_adc.c',
     'syscmd/cmd_act.c',
+    'syscmd/cmd_mlog.c',
 
 ]
 

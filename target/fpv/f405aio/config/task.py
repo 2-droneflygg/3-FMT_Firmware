@@ -2,7 +2,7 @@
 
 TASKS = [
     'comm/*.c',
-    #'logger/*.c',
+    'logger/*.c',
     #'fmtio/*.c',
     'status/*.c',
     'vehicle/multicopter/*.c',
