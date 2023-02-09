@@ -4,7 +4,7 @@ from building import *
 vehicle_type = GetConfigValue('VEHICLE_TYPE')
 if vehicle_type == '"Quadcopter"':
     MODELS = [
-        'plant/multicopter',
+        # 'plant/multicopter',
         # 'ins/base_ins',
         # 'fms/base_fms',
         # 'control/base_controller',

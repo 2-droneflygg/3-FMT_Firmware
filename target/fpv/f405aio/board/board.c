@@ -49,9 +49,19 @@
 #include "drv_rc.h"
 // #include "hal/fmtio_dev/fmtio_dev.h"
 // #include "led.h"
-#include "model/control/control_interface.h"
-#include "model/fms/fms_interface.h"
-#include "model/ins/ins_interface.h"
+
+// #include "model/control/control_interface.h"
+// #include "model/fms/fms_interface.h"
+// #include "model/ins/ins_interface.h"
+
+// #include "target/fpv/f405aio/model/control/control_interface.h"
+// #include "target/fpv/f405aio/model/fms/fms_interface.h"
+// #include "target/fpv/f405aio/model/ins/ins_interface.h"
+
+#include "control_interface.h"
+#include "fms_interface.h"
+#include "ins_interface.h"
+
 #include "module/console/console_config.h"
 #include "module/file_manager/file_manager.h"
 #include "module/mavproxy/mavproxy_config.h"

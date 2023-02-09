@@ -5,10 +5,11 @@ src	= []
 inc = []
 
 src += Glob('*.c')
-src += Glob('lib/*.c')
+#src += Glob('lib/*.c')
+src += Glob('../../../../../src/model/control/base_controller/lib/*.c')
 
 inc += [cwd]
-inc += [cwd + '/lib']
+inc += [cwd + '../../../../../src/model/control/base_controller/lib']
 
 group = DefineGroup('Base_Control', src, depend = [''], CPPPATH = inc)
 
