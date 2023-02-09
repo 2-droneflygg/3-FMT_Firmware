@@ -213,13 +213,13 @@ static uint8_t optflow_data_updated;
 static uint8_t airspeed_data_updated;
 
 //static int IMU_ID;
-static int MAG_ID;
-static int Barometer_ID;
-static int GPS_ID;
-static int Rangefinder_ID;
-static int OpticalFlow_ID;
-static int AirSpeed_ID;
-static int INS_Out_ID;
+// static int MAG_ID;
+// static int Barometer_ID;
+// static int GPS_ID;
+// static int Rangefinder_ID;
+// static int OpticalFlow_ID;
+// static int AirSpeed_ID;
+// static int INS_Out_ID;
 
 fmt_model_info_t ins_model_info;
 
