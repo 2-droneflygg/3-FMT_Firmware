@@ -4,12 +4,14 @@ cwd = GetCurrentDir()
 src	= []
 inc = []
 
+print("local control model")
+
 src += Glob('*.c')
 #src += Glob('lib/*.c')
-src += Glob('../../../../../src/model/control/base_controller/lib/*.c')
+src += Glob('../../../../../../src/model/control/base_controller/lib/*.c')
 
 inc += [cwd]
-inc += [cwd + '../../../../../src/model/control/base_controller/lib']
+inc += [cwd + '../../../../../../src/model/control/base_controller/lib']
 
 group = DefineGroup('Base_Control', src, depend = [''], CPPPATH = inc)
 

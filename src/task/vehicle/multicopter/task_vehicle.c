@@ -19,7 +19,9 @@
 #include "model/control/control_interface.h"
 #include "model/fms/fms_interface.h"
 #include "model/ins/ins_interface.h"
-#include "model/plant/plant_interface.h"
+#ifdef FMT_USING_SIH
+    #include "model/plant/plant_interface.h"
+#endif
 #include "module/file_manager/file_manager.h"
 #include "module/sensor/sensor_hub.h"
 #include "module/sysio/actuator_cmd.h"
