@@ -52,7 +52,7 @@ target = "FPV F405AIO"\n
     range = [1000,2000]\n
 
     [[pilot-cmd.mode]]\n
-    mode = 4\n                    // stabilize mode
+    mode = 3\n                    // stabilize mode
     channel = 5\n
     range = [1800,2000]\n
 
