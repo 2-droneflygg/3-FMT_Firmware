@@ -202,7 +202,7 @@
     /* VBUS sensing is disabled because in the USART RX/TX pins are shared with USB Pins
 	PA9/PA10 in the STM324x9I_EVAL */
     #else
-        #define VBUS_SENSING_ENABLED
+        //#define VBUS_SENSING_ENABLED
     #endif
 
     /****************** USB OTG MODE CONFIGURATION ********************************/

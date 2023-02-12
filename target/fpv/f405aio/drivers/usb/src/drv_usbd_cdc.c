@@ -164,5 +164,6 @@ rt_err_t drv_usb_cdc_init(void)
               &USBD_CDC_cb,
               &USR_cb);
 
+    hal_usbd_cdc_notify_status(&usbd_dev, USBD_STATUS_CONNECT);
     return RT_EOK;
 }
