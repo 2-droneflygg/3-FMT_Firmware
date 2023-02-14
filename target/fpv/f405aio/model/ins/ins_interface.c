@@ -83,77 +83,77 @@ PARAM_GROUP_DEFINE(INS, __param_list);
 // };
 // MLOG_BUS_DEFINE(IMU, IMU_Elems);
 
-static mlog_elem_t MAG_Elems[] = {
-    MLOG_ELEMENT(timestamp, MLOG_UINT32),
-    MLOG_ELEMENT(mag_x, MLOG_FLOAT),
-    MLOG_ELEMENT(mag_y, MLOG_FLOAT),
-    MLOG_ELEMENT(mag_z, MLOG_FLOAT),
-};
-MLOG_BUS_DEFINE(MAG, MAG_Elems);
+// static mlog_elem_t MAG_Elems[] = {
+//     MLOG_ELEMENT(timestamp, MLOG_UINT32),
+//     MLOG_ELEMENT(mag_x, MLOG_FLOAT),
+//     MLOG_ELEMENT(mag_y, MLOG_FLOAT),
+//     MLOG_ELEMENT(mag_z, MLOG_FLOAT),
+// };
+// MLOG_BUS_DEFINE(MAG, MAG_Elems);
 
-static mlog_elem_t Barometer_Elems[] = {
-    MLOG_ELEMENT(timestamp, MLOG_UINT32),
-    MLOG_ELEMENT(pressure, MLOG_FLOAT),
-    MLOG_ELEMENT(temperature, MLOG_FLOAT),
-};
-MLOG_BUS_DEFINE(Barometer, Barometer_Elems);
+// static mlog_elem_t Barometer_Elems[] = {
+//     MLOG_ELEMENT(timestamp, MLOG_UINT32),
+//     MLOG_ELEMENT(pressure, MLOG_FLOAT),
+//     MLOG_ELEMENT(temperature, MLOG_FLOAT),
+// };
+// MLOG_BUS_DEFINE(Barometer, Barometer_Elems);
 
-static mlog_elem_t GPS_uBlox_Elems[] = {
-    MLOG_ELEMENT(timestamp, MLOG_UINT32),
-    MLOG_ELEMENT(iTOW, MLOG_UINT32),
-    MLOG_ELEMENT(year, MLOG_UINT16),
-    MLOG_ELEMENT(month, MLOG_UINT8),
-    MLOG_ELEMENT(day, MLOG_UINT8),
-    MLOG_ELEMENT(hour, MLOG_UINT8),
-    MLOG_ELEMENT(min, MLOG_UINT8),
-    MLOG_ELEMENT(sec, MLOG_UINT8),
-    MLOG_ELEMENT(valid, MLOG_UINT8),
-    MLOG_ELEMENT(tAcc, MLOG_UINT32),
-    MLOG_ELEMENT(nano, MLOG_INT32),
-    MLOG_ELEMENT(fixType, MLOG_UINT8),
-    MLOG_ELEMENT(flags, MLOG_UINT8),
-    MLOG_ELEMENT(reserved1, MLOG_UINT8),
-    MLOG_ELEMENT(numSV, MLOG_UINT8),
-    MLOG_ELEMENT(lon, MLOG_INT32),
-    MLOG_ELEMENT(lat, MLOG_INT32),
-    MLOG_ELEMENT(height, MLOG_INT32),
-    MLOG_ELEMENT(hMSL, MLOG_INT32),
-    MLOG_ELEMENT(hAcc, MLOG_UINT32),
-    MLOG_ELEMENT(vAcc, MLOG_UINT32),
-    MLOG_ELEMENT(velN, MLOG_INT32),
-    MLOG_ELEMENT(velE, MLOG_INT32),
-    MLOG_ELEMENT(velD, MLOG_INT32),
-    MLOG_ELEMENT(gSpeed, MLOG_INT32),
-    MLOG_ELEMENT(heading, MLOG_INT32),
-    MLOG_ELEMENT(sAcc, MLOG_UINT32),
-    MLOG_ELEMENT(headingAcc, MLOG_UINT32),
-    MLOG_ELEMENT(pDOP, MLOG_UINT16),
-    MLOG_ELEMENT(reserved2, MLOG_UINT16),
-};
-MLOG_BUS_DEFINE(GPS_uBlox, GPS_uBlox_Elems);
+// static mlog_elem_t GPS_uBlox_Elems[] = {
+//     MLOG_ELEMENT(timestamp, MLOG_UINT32),
+//     MLOG_ELEMENT(iTOW, MLOG_UINT32),
+//     MLOG_ELEMENT(year, MLOG_UINT16),
+//     MLOG_ELEMENT(month, MLOG_UINT8),
+//     MLOG_ELEMENT(day, MLOG_UINT8),
+//     MLOG_ELEMENT(hour, MLOG_UINT8),
+//     MLOG_ELEMENT(min, MLOG_UINT8),
+//     MLOG_ELEMENT(sec, MLOG_UINT8),
+//     MLOG_ELEMENT(valid, MLOG_UINT8),
+//     MLOG_ELEMENT(tAcc, MLOG_UINT32),
+//     MLOG_ELEMENT(nano, MLOG_INT32),
+//     MLOG_ELEMENT(fixType, MLOG_UINT8),
+//     MLOG_ELEMENT(flags, MLOG_UINT8),
+//     MLOG_ELEMENT(reserved1, MLOG_UINT8),
+//     MLOG_ELEMENT(numSV, MLOG_UINT8),
+//     MLOG_ELEMENT(lon, MLOG_INT32),
+//     MLOG_ELEMENT(lat, MLOG_INT32),
+//     MLOG_ELEMENT(height, MLOG_INT32),
+//     MLOG_ELEMENT(hMSL, MLOG_INT32),
+//     MLOG_ELEMENT(hAcc, MLOG_UINT32),
+//     MLOG_ELEMENT(vAcc, MLOG_UINT32),
+//     MLOG_ELEMENT(velN, MLOG_INT32),
+//     MLOG_ELEMENT(velE, MLOG_INT32),
+//     MLOG_ELEMENT(velD, MLOG_INT32),
+//     MLOG_ELEMENT(gSpeed, MLOG_INT32),
+//     MLOG_ELEMENT(heading, MLOG_INT32),
+//     MLOG_ELEMENT(sAcc, MLOG_UINT32),
+//     MLOG_ELEMENT(headingAcc, MLOG_UINT32),
+//     MLOG_ELEMENT(pDOP, MLOG_UINT16),
+//     MLOG_ELEMENT(reserved2, MLOG_UINT16),
+// };
+// MLOG_BUS_DEFINE(GPS_uBlox, GPS_uBlox_Elems);
 
-mlog_elem_t Rangefinder_Elems[] = {
-    MLOG_ELEMENT(timestamp, MLOG_UINT32),
-    MLOG_ELEMENT(distance, MLOG_FLOAT),
-};
-MLOG_BUS_DEFINE(Rangefinder, Rangefinder_Elems);
+// mlog_elem_t Rangefinder_Elems[] = {
+//     MLOG_ELEMENT(timestamp, MLOG_UINT32),
+//     MLOG_ELEMENT(distance, MLOG_FLOAT),
+// };
+// MLOG_BUS_DEFINE(Rangefinder, Rangefinder_Elems);
 
-mlog_elem_t Optflow_Elems[] = {
-    MLOG_ELEMENT(timestamp, MLOG_UINT32),
-    MLOG_ELEMENT(vx, MLOG_FLOAT),
-    MLOG_ELEMENT(vy, MLOG_FLOAT),
-    MLOG_ELEMENT(quality, MLOG_UINT8),
-    MLOG_ELEMENT(reserved1, MLOG_UINT8),
-    MLOG_ELEMENT(reserved2, MLOG_UINT16),
-};
-MLOG_BUS_DEFINE(OpticalFlow, Optflow_Elems);
+// mlog_elem_t Optflow_Elems[] = {
+//     MLOG_ELEMENT(timestamp, MLOG_UINT32),
+//     MLOG_ELEMENT(vx, MLOG_FLOAT),
+//     MLOG_ELEMENT(vy, MLOG_FLOAT),
+//     MLOG_ELEMENT(quality, MLOG_UINT8),
+//     MLOG_ELEMENT(reserved1, MLOG_UINT8),
+//     MLOG_ELEMENT(reserved2, MLOG_UINT16),
+// };
+// MLOG_BUS_DEFINE(OpticalFlow, Optflow_Elems);
 
-mlog_elem_t Airspeed_Elems[] = {
-    MLOG_ELEMENT(timestamp, MLOG_UINT32),
-    MLOG_ELEMENT(diff_pressure, MLOG_FLOAT),
-    MLOG_ELEMENT(temperature, MLOG_FLOAT),
-};
-MLOG_BUS_DEFINE(AirSpeed, Airspeed_Elems);
+// mlog_elem_t Airspeed_Elems[] = {
+//     MLOG_ELEMENT(timestamp, MLOG_UINT32),
+//     MLOG_ELEMENT(diff_pressure, MLOG_FLOAT),
+//     MLOG_ELEMENT(temperature, MLOG_FLOAT),
+// };
+// MLOG_BUS_DEFINE(AirSpeed, Airspeed_Elems);
 
 mlog_elem_t INS_Out_Elems[] = {
     MLOG_ELEMENT(timestamp, MLOG_UINT32),
@@ -219,7 +219,7 @@ static uint8_t airspeed_data_updated;
 // static int Rangefinder_ID;
 // static int OpticalFlow_ID;
 // static int AirSpeed_ID;
-// static int INS_Out_ID;
+static int INS_Out_ID;
 
 fmt_model_info_t ins_model_info;
 
@@ -399,7 +399,7 @@ void ins_interface_step(uint32_t timestamp)
     /* publish INS output */
     mcn_publish(MCN_HUB(ins_output), &INS_Y.INS_Out);
 
-    /* record INS input bus data if updated */
+    // /* record INS input bus data if updated */
     // if (imu_data_updated) {
     //     imu_data_updated = 0;
     //     /* Log IMU data if IMU updated */
@@ -443,11 +443,11 @@ void ins_interface_step(uint32_t timestamp)
     // }
 
     /* Log INS output bus data */
-    // DEFINE_TIMETAG(ins_output, 100);
-    // if (check_timetag(TIMETAG(ins_output))) {
+    DEFINE_TIMETAG(ins_output, 100);
+    if (check_timetag(TIMETAG(ins_output))) {
         /* Log INS out data */
-        //mlog_push_msg((uint8_t*)&INS_Y.INS_Out, INS_Out_ID, sizeof(INS_Y.INS_Out));
-    // }
+        mlog_push_msg((uint8_t*)&INS_Y.INS_Out, INS_Out_ID, sizeof(INS_Y.INS_Out));
+    }
 }
 
 void ins_interface_init(void)
@@ -472,7 +472,7 @@ void ins_interface_init(void)
     // Rangefinder_ID = mlog_get_bus_id("Rangefinder");
     // OpticalFlow_ID = mlog_get_bus_id("OpticalFlow");
     // AirSpeed_ID = mlog_get_bus_id("AirSpeed");
-    // INS_Out_ID = mlog_get_bus_id("INS_Out");
+    INS_Out_ID = mlog_get_bus_id("INS_Out");
     //FMT_ASSERT(IMU_ID >= 0);
     // FMT_ASSERT(MAG_ID >= 0);
     // FMT_ASSERT(Barometer_ID >= 0);
@@ -480,7 +480,7 @@ void ins_interface_init(void)
     // FMT_ASSERT(Rangefinder_ID >= 0);
     // FMT_ASSERT(OpticalFlow_ID >= 0);
     // FMT_ASSERT(AirSpeed_ID >= 0);
-    // FMT_ASSERT(INS_Out_ID >= 0);
+    FMT_ASSERT(INS_Out_ID >= 0);
 
     mlog_register_callback(MLOG_CB_START, mlog_start_cb);
 

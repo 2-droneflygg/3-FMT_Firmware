@@ -388,7 +388,7 @@ void bsp_post_initialize(void)
     bsp_show_information();
 
     /* dump boot log to file */
-    boot_log_dump();
+    //boot_log_dump();
 }
 
 /**

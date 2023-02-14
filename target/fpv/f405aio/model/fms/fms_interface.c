@@ -124,33 +124,33 @@ PARAM_GROUP_DEFINE(FMS, __param_list);
 // };
 // MLOG_BUS_DEFINE(Mission_Data, Mission_Data_Elems);
 
-// static mlog_elem_t FMS_Out_Elems[] = {
-//     MLOG_ELEMENT(timestamp, MLOG_UINT32),
-//     MLOG_ELEMENT(p_cmd, MLOG_FLOAT),
-//     MLOG_ELEMENT(q_cmd, MLOG_FLOAT),
-//     MLOG_ELEMENT(r_cmd, MLOG_FLOAT),
-//     MLOG_ELEMENT(phi_cmd, MLOG_FLOAT),
-//     MLOG_ELEMENT(theta_cmd, MLOG_FLOAT),
-//     MLOG_ELEMENT(psi_rate_cmd, MLOG_FLOAT),
-//     MLOG_ELEMENT(u_cmd, MLOG_FLOAT),
-//     MLOG_ELEMENT(v_cmd, MLOG_FLOAT),
-//     MLOG_ELEMENT(w_cmd, MLOG_FLOAT),
-//     MLOG_ELEMENT(ax_cmd, MLOG_FLOAT),
-//     MLOG_ELEMENT(ay_cmd, MLOG_FLOAT),
-//     MLOG_ELEMENT(az_cmd, MLOG_FLOAT),
-//     MLOG_ELEMENT_VEC(actuator_cmd, MLOG_UINT16, 16),
-//     MLOG_ELEMENT(throttle_cmd, MLOG_UINT16),
-//     MLOG_ELEMENT(cmd_mask, MLOG_UINT16),
-//     MLOG_ELEMENT(status, MLOG_UINT8),
-//     MLOG_ELEMENT(state, MLOG_UINT8),
-//     MLOG_ELEMENT(ctrl_mode, MLOG_UINT8),
-//     MLOG_ELEMENT(mode, MLOG_UINT8),
-//     MLOG_ELEMENT(reset, MLOG_UINT8),
-//     MLOG_ELEMENT(wp_consume, MLOG_UINT8),
-//     MLOG_ELEMENT(wp_current, MLOG_UINT8),
-//     MLOG_ELEMENT(reserved, MLOG_UINT8),
-// };
-// MLOG_BUS_DEFINE(FMS_Out, FMS_Out_Elems);
+static mlog_elem_t FMS_Out_Elems[] = {
+    MLOG_ELEMENT(timestamp, MLOG_UINT32),
+    MLOG_ELEMENT(p_cmd, MLOG_FLOAT),
+    MLOG_ELEMENT(q_cmd, MLOG_FLOAT),
+    MLOG_ELEMENT(r_cmd, MLOG_FLOAT),
+    MLOG_ELEMENT(phi_cmd, MLOG_FLOAT),
+    MLOG_ELEMENT(theta_cmd, MLOG_FLOAT),
+    MLOG_ELEMENT(psi_rate_cmd, MLOG_FLOAT),
+    MLOG_ELEMENT(u_cmd, MLOG_FLOAT),
+    MLOG_ELEMENT(v_cmd, MLOG_FLOAT),
+    MLOG_ELEMENT(w_cmd, MLOG_FLOAT),
+    MLOG_ELEMENT(ax_cmd, MLOG_FLOAT),
+    MLOG_ELEMENT(ay_cmd, MLOG_FLOAT),
+    MLOG_ELEMENT(az_cmd, MLOG_FLOAT),
+    MLOG_ELEMENT_VEC(actuator_cmd, MLOG_UINT16, 16),
+    MLOG_ELEMENT(throttle_cmd, MLOG_UINT16),
+    MLOG_ELEMENT(cmd_mask, MLOG_UINT16),
+    MLOG_ELEMENT(status, MLOG_UINT8),
+    MLOG_ELEMENT(state, MLOG_UINT8),
+    MLOG_ELEMENT(ctrl_mode, MLOG_UINT8),
+    MLOG_ELEMENT(mode, MLOG_UINT8),
+    MLOG_ELEMENT(reset, MLOG_UINT8),
+    MLOG_ELEMENT(wp_consume, MLOG_UINT8),
+    MLOG_ELEMENT(wp_current, MLOG_UINT8),
+    MLOG_ELEMENT(reserved, MLOG_UINT8),
+};
+MLOG_BUS_DEFINE(FMS_Out, FMS_Out_Elems);
 
 static McnNode_t pilot_cmd_nod;
 static McnNode_t gcs_cmd_nod;
@@ -167,7 +167,7 @@ static uint8_t mission_data_updated;
 // static int GCS_Cmd_ID;
 // static int Auto_Cmd_ID;
 // static int Mission_Data_ID;
-// static int FMS_Out_ID;
+static int FMS_Out_ID;
 
 static char* fms_status[] = {
     "None",
@@ -333,11 +333,11 @@ void fms_interface_step(uint32_t timestamp)
     // }
 
     /* Log FMS output bus data */
-    // DEFINE_TIMETAG(fms_output, 100);
-    // if (check_timetag(TIMETAG(fms_output))) {
-    //     /* Log FMS out data */
-    //     mlog_push_msg((uint8_t*)&FMS_Y.FMS_Out, FMS_Out_ID, sizeof(FMS_Out_Bus));
-    // }
+    DEFINE_TIMETAG(fms_output, 100);
+    if (check_timetag(TIMETAG(fms_output))) {
+        /* Log FMS out data */
+        mlog_push_msg((uint8_t*)&FMS_Y.FMS_Out, FMS_Out_ID, sizeof(FMS_Out_Bus));
+    }
 }
 
 void fms_interface_init(void)
@@ -358,12 +358,12 @@ void fms_interface_init(void)
     // GCS_Cmd_ID = mlog_get_bus_id("GCS_Cmd");
     // Auto_Cmd_ID = mlog_get_bus_id("Auto_Cmd");
     // Mission_Data_ID = mlog_get_bus_id("Mission_Data");
-    // FMS_Out_ID = mlog_get_bus_id("FMS_Out");
+    FMS_Out_ID = mlog_get_bus_id("FMS_Out");
     // FMT_ASSERT(Pilot_Cmd_ID >= 0);
     // FMT_ASSERT(GCS_Cmd_ID >= 0);
     // FMT_ASSERT(Auto_Cmd_ID >= 0);
     // FMT_ASSERT(Mission_Data_ID >= 0);
-    // FMT_ASSERT(FMS_Out_ID >= 0);
+    FMT_ASSERT(FMS_Out_ID >= 0);
 
     mlog_register_callback(MLOG_CB_START, mlog_start_cb);
 

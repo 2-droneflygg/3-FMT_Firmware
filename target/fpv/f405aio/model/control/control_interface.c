@@ -67,27 +67,27 @@ static param_t __param_list[] = {
 PARAM_GROUP_DEFINE(CONTROL, __param_list);
 
 /* define log data */
-static mlog_elem_t Control_Out_Elems[] = {
-    MLOG_ELEMENT(timestamp, MLOG_UINT32),
-    MLOG_ELEMENT_VEC(actuator_cmd, MLOG_UINT16, 16),
-};
-MLOG_BUS_DEFINE(Control_Out, Control_Out_Elems);
+// static mlog_elem_t Control_Out_Elems[] = {
+//     MLOG_ELEMENT(timestamp, MLOG_UINT32),
+//     MLOG_ELEMENT_VEC(actuator_cmd, MLOG_UINT16, 16),
+// };
+// MLOG_BUS_DEFINE(Control_Out, Control_Out_Elems);
 
-static mlog_elem_t PID_DATE_Elems[] = {
-    MLOG_ELEMENT(roll_cmd, MLOG_FLOAT),
-    MLOG_ELEMENT(pitch_cmd, MLOG_FLOAT),
-    MLOG_ELEMENT(yaw_cmd, MLOG_FLOAT),
-    MLOG_ELEMENT(roll_est, MLOG_FLOAT),
-    MLOG_ELEMENT(pitch_est, MLOG_FLOAT),
-    MLOG_ELEMENT(yaw_est, MLOG_FLOAT),
-};
+// static mlog_elem_t PID_DATE_Elems[] = {
+//     MLOG_ELEMENT(roll_cmd, MLOG_FLOAT),
+//     MLOG_ELEMENT(pitch_cmd, MLOG_FLOAT),
+//     MLOG_ELEMENT(yaw_cmd, MLOG_FLOAT),
+//     MLOG_ELEMENT(roll_est, MLOG_FLOAT),
+//     MLOG_ELEMENT(pitch_est, MLOG_FLOAT),
+//     MLOG_ELEMENT(yaw_est, MLOG_FLOAT),
+// };
 
-MLOG_BUS_DEFINE(PID_DATE, PID_DATE_Elems);
+// MLOG_BUS_DEFINE(PID_DATE, PID_DATE_Elems);
 
 static McnNode_t fms_out_nod;
 static McnNode_t ins_out_nod;
 
-static int Control_Out_ID;
+//static int Control_Out_ID;
 
 fmt_model_info_t control_model_info;
 
@@ -150,12 +150,12 @@ void control_interface_step(uint32_t timestamp)
 
     mcn_publish(MCN_HUB(control_output), &Controller_Y.Control_Out);
 
-    DEFINE_TIMETAG(control_output, 100);
-    /* Log Control output bus data */
-    if (check_timetag(TIMETAG(control_output))) {
-        /* Log Control out data */
-        mlog_push_msg((uint8_t*)&Controller_Y.Control_Out, Control_Out_ID, sizeof(Control_Out_Bus));
-    }
+    //DEFINE_TIMETAG(control_output, 100);
+    // /* Log Control output bus data */
+    // if (check_timetag(TIMETAG(control_output))) {
+    //     /* Log Control out data */
+    //     mlog_push_msg((uint8_t*)&Controller_Y.Control_Out, Control_Out_ID, sizeof(Control_Out_Bus));
+    // }
 }
 
 void control_interface_init(void)
@@ -168,8 +168,8 @@ void control_interface_init(void)
     fms_out_nod = mcn_subscribe(MCN_HUB(fms_output), NULL, NULL);
     ins_out_nod = mcn_subscribe(MCN_HUB(ins_output), NULL, NULL);
 
-    Control_Out_ID = mlog_get_bus_id("Control_Out");
-    FMT_ASSERT(Control_Out_ID >= 0);
+    //Control_Out_ID = mlog_get_bus_id("Control_Out");
+    //FMT_ASSERT(Control_Out_ID >= 0);
 
     Controller_init();
 
