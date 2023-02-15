@@ -275,7 +275,7 @@ void bsp_initialize(void)
     //EnablePower();
 
     // /* start recording boot log */
-    FMT_CHECK(boot_log_init());
+    //FMT_CHECK(boot_log_init());
 
     // /* init uMCN */
     FMT_CHECK(mcn_init());
