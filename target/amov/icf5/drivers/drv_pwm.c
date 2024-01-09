@@ -184,16 +184,16 @@ rt_inline void __write_pwm(uint8_t chan_id, float dc)
 {
     switch (chan_id) {
     case 0:
-        timer_channel_output_pulse_value_config(TIMER0, TIMER_CH_3, PWM_ARR(__pwm_freq) * dc - 1);
-        break;
-    case 1:
         timer_channel_output_pulse_value_config(TIMER0, TIMER_CH_2, PWM_ARR(__pwm_freq) * dc - 1);
         break;
-    case 2:
+    case 1:
         timer_channel_output_pulse_value_config(TIMER0, TIMER_CH_1, PWM_ARR(__pwm_freq) * dc - 1);
         break;
-    case 3:
+    case 2:
         timer_channel_output_pulse_value_config(TIMER0, TIMER_CH_0, PWM_ARR(__pwm_freq) * dc - 1);
+        break;
+    case 3:
+        timer_channel_output_pulse_value_config(TIMER0, TIMER_CH_3, PWM_ARR(__pwm_freq) * dc - 1);
         break;
     case 4:
         timer_channel_output_pulse_value_config(TIMER3, TIMER_CH_1, PWM_ARR(__pwm_freq) * dc - 1);
